@@ -16,6 +16,8 @@
 package com.demoncat.dcapp.utils;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 /**
  * @Class: CommonUtils
@@ -38,5 +40,20 @@ public class CommonUtils {
             result = context.getResources().getDimensionPixelSize(resourceId);
         }
         return result;
+    }
+
+    /**
+     * Get network status whether is available
+     * @param context
+     * @return
+     */
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager manager =
+                (ConnectivityManager) context.getApplicationContext()
+                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (null == manager)
+            return false;
+        NetworkInfo info = manager.getActiveNetworkInfo();
+        return !(null == info || !info.isAvailable());
     }
 }
