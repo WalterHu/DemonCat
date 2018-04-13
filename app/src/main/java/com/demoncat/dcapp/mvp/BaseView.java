@@ -33,11 +33,11 @@ import java.lang.ref.WeakReference;
  * @CreateDate: 2018/4/12
  */
 public abstract class BaseView extends Activity implements IView {
-    private BasePresenter[] mAllPresenters = null;
+    private IPresenter[] mAllPresenters = null;
 
     protected Handler mHandler = new MyHandler(this);
 
-    protected abstract BasePresenter[] getPresenter();
+    protected abstract IPresenter[] getPresenter();
     protected abstract int getLayoutId(); // get layout resource id
     protected abstract void initView(); // init view contents
     protected abstract void initData(); // do some data initialize
@@ -69,7 +69,7 @@ public abstract class BaseView extends Activity implements IView {
         }
         // destroy all presenters when destroy view
         if (mAllPresenters != null && mAllPresenters.length > 0) {
-            for (BasePresenter presenter : mAllPresenters) {
+            for (IPresenter presenter : mAllPresenters) {
                 presenter.destroy();
             }
         }
