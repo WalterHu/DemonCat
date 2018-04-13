@@ -13,30 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.demoncat.dcapp;
-
-import android.app.Application;
-
-import com.demoncat.dcapp.network.ServiceFactory;
+package com.demoncat.dcapp.network;
 
 /**
- * @Class: DemonCatApp
- * @Description: Base application
+ * @Class: BaseParams
+ * @Description: Base request params for REST request
  * @Author: hubohua
- * @CreateDate: 2018/4/12
+ * @CreateDate: 2018/4/13
  */
-public class DemonCatApp extends Application {
-    private static DemonCatApp mInstance;
+public class BaseParams {
+    public String version;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mInstance = this;
-        // init context of service factory
-        ServiceFactory.initContext(mInstance);
-    }
-
-    public static DemonCatApp get() {
-        return mInstance;
+    public BaseParams(String version) {
+        this.version = version;
     }
 }

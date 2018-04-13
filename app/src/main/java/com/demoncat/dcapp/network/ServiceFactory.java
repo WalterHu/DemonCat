@@ -54,14 +54,14 @@ public class ServiceFactory {
 
     private Retrofit mRetrofit;
 
-    private Context mContext;
+    private static Context sContext;
 
     /**
      * Should be called at beginning of process
      * @param context
      */
-    public void initContext(Context context) {
-        mContext = context;
+    public static void initContext(Context context) {
+        sContext = context;
     }
 
     private ServiceFactory() {
@@ -76,7 +76,7 @@ public class ServiceFactory {
                 new HttpLoggingInterceptor().setLevel(
                         HttpLoggingInterceptor.Level.BODY));
         // http request&response cache dir and file
-        File file = new File(mContext.getExternalCacheDir(),
+        File file = new File(sContext.getExternalCacheDir(),
                 Configuration.HTTP_CACHE_DIR);
         Cache cache = new Cache(file, Configuration.HTTP_CACHE_SIZE);
         mClient = builder

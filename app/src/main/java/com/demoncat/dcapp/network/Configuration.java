@@ -28,5 +28,5 @@ public class Configuration {
     public static final int HTTP_READ_WRITE_TIMEOUT = 20; // 20s
     public static final int HTTP_CACHE_MAX_AGE = 60; // 60s when has network for cache
     public static final int HTTP_CACHE_MAX_STALE = 60 * 60; // 1h when no network for cache
-    public static final String HTTP_BASE_URL = "";
+    public static final String HTTP_BASE_URL = "http://www.demoncat.com/"; // the base url should has '/' at end
 }

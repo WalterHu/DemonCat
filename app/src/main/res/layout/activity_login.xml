@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/background_dark"
+        android:padding="@dimen/fab_margin"
+        android:gravity="center_horizontal"
+        android:textSize="18sp"
+        android:text="登录"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_orange_dark" />
+    <EditText
+        android:id="@+id/et_name"
+        android:layout_width="150dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:layout_gravity="center_horizontal"
+        android:textSize="18sp"
+        android:paddingLeft="@dimen/fab_margin"
+        android:hint="用户名" />
+    <EditText
+        android:id="@+id/et_pwd"
+        android:layout_width="150dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:layout_gravity="center_horizontal"
+        android:inputType="textPassword"
+        android:textSize="18sp"
+        android:paddingLeft="@dimen/fab_margin"
+        android:hint="密码" />
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:background="@android:color/holo_orange_dark"
+        android:text="登录"/>
+</LinearLayout>

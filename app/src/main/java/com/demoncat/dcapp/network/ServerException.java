@@ -13,30 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.demoncat.dcapp;
-
-import android.app.Application;
-
-import com.demoncat.dcapp.network.ServiceFactory;
+package com.demoncat.dcapp.network;
 
 /**
- * @Class: DemonCatApp
- * @Description: Base application
+ * @Class: ServerException
+ * @Description: Common sever exception definition wrapper of error code.
+ *               Used for custom error code in server protocol.
  * @Author: hubohua
- * @CreateDate: 2018/4/12
+ * @CreateDate: 2018/4/13
  */
-public class DemonCatApp extends Application {
-    private static DemonCatApp mInstance;
+public class ServerException extends RuntimeException {
+    public String code;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mInstance = this;
-        // init context of service factory
-        ServiceFactory.initContext(mInstance);
+    public ServerException(String code) {
+        this.code = code;
     }
 
-    public static DemonCatApp get() {
-        return mInstance;
-    }
+    /*-------Common Error Definition--------*/
+    public static final String ERROR_CODE_SUCCESS = "0200";
+
 }
