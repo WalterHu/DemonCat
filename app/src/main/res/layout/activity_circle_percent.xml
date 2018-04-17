@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:circle="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/background_dark"
+        android:padding="@dimen/fab_margin"
+        android:gravity="center_horizontal"
+        android:textSize="18sp"
+        android:text="圆形进度条"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_orange_dark" />
+    <com.demoncat.dcapp.widget.CirclePercentView
+        android:id="@+id/cp_percent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/fab_margin"
+        circle:bigColor="@color/colorPrimary"
+        circle:percent="0"
+        circle:stripeWidth="20dp"
+        circle:radius="60dp"
+        circle:centerTextSize="10sp"
+        circle:smallColor="@color/colorAccent" />
+    <SeekBar
+        android:id="@+id/sb_percent"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:progress="0"
+        android:max="100"/>
+</LinearLayout>

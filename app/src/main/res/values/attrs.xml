@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CirclePercentView">
+        <!-- Circle radius size -->
+        <attr name="radius" format="dimension" />
+        <!-- Circle stripe width -->
+        <attr name="stripeWidth" format="dimension" />
+        <!-- Percent max is 100-->
+        <attr name="percent" format="integer" />
+        <!-- Small circle color  -->
+        <attr name="smallColor" format="color" />
+        <!-- Ring color -->
+        <attr name="bigColor" format="color" />
+        <!-- Text center size -->
+        <attr name="centerTextSize" format="dimension" />
+    </declare-styleable>
+</resources>
