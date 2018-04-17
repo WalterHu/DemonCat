@@ -17,7 +17,7 @@ package com.demoncat.dcapp.common;
 
 /**
  * @Class: Constants
- * @Description: java类作用描述
+ * @Description: 常量描述
  * @Author: hubohua
  * @CreateDate: 2018/4/12
  */
