@@ -39,4 +39,6 @@ dependencies {
     // rxjava
     implementation 'io.reactivex:rxjava:1.3.0'
     implementation 'io.reactivex:rxandroid:1.2.1'
+    // using by SlidingMenu
+    implementation 'com.nineoldandroids:library:2.4.0'
 }

@@ -24,4 +24,7 @@
         <attr name="roundWidth" format="dimension" />
         <attr name="roundHeight" format="dimension" />
     </declare-styleable>
+    <declare-styleable name="SliddingMenu">
+        <attr name="rigthtPadding" format="dimension" />
+    </declare-styleable>
 </resources>

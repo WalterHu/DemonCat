@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/darker_gray">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/background_dark"
+        android:padding="@dimen/fab_margin"
+        android:gravity="center_horizontal"
+        android:textSize="18sp"
+        android:text="侧滑菜单"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_orange_dark" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:text="我是内容"
+        android:textStyle="bold"
+        android:textColor="@color/colorAccent"
+        android:textSize="24sp"/>
+    <Button
+        android:id="@+id/btn_toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:layout_gravity="center_horizontal"
+        android:text="打开" />
+</LinearLayout>
