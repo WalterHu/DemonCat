@@ -28,6 +28,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.demoncat.dcapp.common.Constants;
+import com.demoncat.dcapp.widget.DragGridViewApdater;
 import com.demoncat.dcapp.widget.DragGridViewPager;
 
 import java.util.ArrayList;
@@ -43,7 +44,6 @@ public class DragGridViewActivity extends Activity {
     private DragGridViewPager mDragPager;
     private DragViewAdapter mAdapter;
     private TextView mTvPager;
-    private List<Data> mData;
 
     private int mCurrPage = -1; // default drag gridview page
     private int mNumPerPage = DEFAULT_PAGE_COLUM * DEFAULT_PAGE_ROWS;
@@ -56,218 +56,61 @@ public class DragGridViewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drag_view);
         mDragPager = findViewById(R.id.dg_pager);
-        mDragPager.setColCount(DEFAULT_PAGE_COLUM);
-        mDragPager.setRowCount(DEFAULT_PAGE_ROWS);
         mAdapter = new DragViewAdapter(getApplicationContext());
-        mDragPager.setAdapter(mAdapter);
-        mData = getData();
-        mAdapter.setData(mData);
-        mDragPager.setOnRearrangeListener(new DragGridViewPager.OnRearrangeListener() {
-            @Override
-            public void onRearrange(int oldIndex, int newIndex) {
-                mAdapter.swipeData(oldIndex, newIndex);
-            }
-
-            @Override
-            public void onFinished(int index) {
-                // when switch index has changed
-                finishEditMode();
-                setToCorrectPage(index);
-            }
-        });
-
-        mDragPager.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if (mData.get(position) != null && !mData.get(position).isSlot()) {
-                    // should return true to handle the long click event
-                    appendNewEmtyPage();
-                    return true;
-                }
-                return false;
-            }
-        });
+        mAdapter.attach(mDragPager);
+        mAdapter.setData(getData());
     }
 
-    private List<Data> getData() {
-        List<Data> data = new ArrayList<>();
+    private List<MyData> getData() {
+        List<MyData> data = new ArrayList<>();
         for (int i = 0; i < 10; i ++) {
-            data.add(new Data(false, "Item-" + i));
+            data.add(new MyData(false, "Item-" + i));
         }
-        appendLeftEmptySlot(data);
         return data;
     }
 
-    /**
-     * Append the empty slot for the page which item count is not full
-
-     */
-    private void appendLeftEmptySlot(List<Data> data) {
-        if (data != null && !data.isEmpty()) {
-            // calculate left empty slot at last page
-            int left = mNumPerPage - data.size() % mNumPerPage;
-            if (left > 0 && left < mNumPerPage) {
-                for (int i = 0; i < left; i ++) {
-                    Data d = new Data(true, "empty");
-                    data.add(d); // full the left index item
-                }
-            }
-        }
-    }
-
-    /**
-     * Append new empty slot page for edit mode
-     */
-    private void appendNewEmtyPage() {
-        if (mData != null) {
-            List<Data> emptySlot = new ArrayList<>();
-            for (int i = 0; i < mNumPerPage; i ++) {
-                Data d = new Data(true, "empty");
-                emptySlot.add(d); // add empty slot for size 8
-            }
-            mAdapter.setEditMode(true);
-            mAdapter.addData(emptySlot); // mData could be add new empty slot of size per page
-        }
-    }
-
-    /**
-     * Finish edit mode and recalculate the page and empty slot
-     */
-    private void finishEditMode() {
-        if (mData != null && !mData.isEmpty()) {
-            int size = mData.size();
-            int index = -1; // record the last not empty item index
-            for (int i = size - 1; i > -1; i --) {
-                if (mData.get(i) != null && !mData.get(i).isSlot()) {
-                    // find the last not empty item
-                    index = i;
-                    break;
-                }
-            }
-            if (index <= -1 || index == size - 1) {
-                // find none or the index is last one
-                // which means the page has no left empty slot
-                // nothing to do
-            } else if (index + 1 >= size - 1) {
-                // the last second one, remove the last one
-                mData.remove(size - 1);
-            } else {
-                // remove the left slot from the last not empty item
-                mData.subList(index + 1, size).clear();
-            }
-            appendLeftEmptySlot(mData);
-            mAdapter.setEditMode(false);
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-    /**
-     * Set to current targe index of page
-     * When item moves to side of current page and tap up,
-     * the item would return to the original index slot.
-     * But the pager will stay at the last empty new page
-     * which should be delete when sliding end.
-     * @param index final index
-     */
-    private void setToCorrectPage(int index) {
-        // calculate current page
-        if (mData != null && !mData.isEmpty()) {
-            if (index >= 0 && index < mData.size()) {
-                int pageIndex = index / mNumPerPage;
-                Log.d(Constants.TAG_DEMONCAT,
-                        "OnRearrangeListener.onFinished pageIndex: " + pageIndex);
-                if (pageIndex >= 0) {
-                    mDragPager.setCurrentItem(pageIndex);
-                }
-            }
-        }
-    }
-
-    private static class DragViewAdapter extends BaseAdapter {
-        private List<Data> mData;
-        private boolean mEditMode;
-        private Context mContext;
+    private static class DragViewAdapter extends DragGridViewApdater {
 
         public DragViewAdapter(Context context) {
-            mContext = context;
-        }
-
-        /**
-         *
-         * @param data
-         */
-        public void setData(List<Data> data) {
-            mData = data;
-            notifyDataSetChanged();
-        }
-
-        /**
-         * Add more data list to current content
-         * @param data
-         */
-        public void addData(List<Data> data) {
-            if (mData == null) {
-                mData = new ArrayList<>();
-            }
-            mData.addAll(data);
-            notifyDataSetChanged();
-        }
-
-        /**
-         * Switch item position in index1 and index2
-         * @param index1
-         * @param index2
-         */
-        public void swipeData(int index1, int index2) {
-            if (index1 >= 0 && index1 < getCount()
-                    && index2 >= 0 && index2 < getCount()) {
-                Data d1 = mData.get(index1);
-                Data d2 = mData.get(index2);
-                mData.set(index1, d2);
-                mData.set(index2, d1);
-                notifyDataSetChanged();
-            }
-        }
-
-        /**
-         * Set in edit mode
-         * When edit mode the page would add another empty one
-         * @param editMode
-         */
-        public void setEditMode(boolean editMode) {
-            mEditMode = editMode;
+            super(context);
         }
 
         @Override
-        public int getCount() {
-            return mData == null ? 0 : mData.size();
+        protected int getCountCols() {
+            return DEFAULT_PAGE_COLUM;
         }
 
         @Override
-        public Object getItem(int position) {
-            return mData.get(position);
+        protected int getCountRows() {
+            return DEFAULT_PAGE_ROWS;
         }
 
         @Override
-        public long getItemId(int position) {
-            return position;
+        protected Data createEmptyItem() {
+            return new MyData(true, "empty");
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder viewHolder = null;
-            if (convertView == null) {
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_drag_grid_view, null);
-                viewHolder = new ViewHolder();
-                viewHolder.name = convertView.findViewById(R.id.item_name);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
+        protected int getContentLayout() {
+            return R.layout.item_drag_grid_view;
+        }
+
+        @Override
+        protected void bindDataHolder(View convertView, Data data, int position, boolean isSlot) {
+            if (convertView != null && data != null) {
+                ViewHolder holder = (ViewHolder) convertView.getTag();
+                if (holder == null) {
+                    holder = new ViewHolder();
+                    holder.name = convertView.findViewById(R.id.item_name);
+                    convertView.setTag(holder);
+                }
+                // check the data slot empty or not
+                if (data.isSlot()) {
+                    holder.name.setText("empty item");
+                } else {
+                    holder.name.setText(((MyData) data).getName());
+                }
             }
-            if (mData != null && mData.size() > position) {
-                viewHolder.name.setText(mData.get(position).getName());
-            }
-            return convertView;
         }
 
         private static class ViewHolder {
@@ -275,11 +118,11 @@ public class DragGridViewActivity extends Activity {
         }
     }
 
-    private static class Data {
+    private static class MyData implements DragGridViewApdater.Data {
         private boolean isSlot; // whether is an empty data
         private String name;
 
-        public Data(boolean isSlot, String name) {
+        public MyData(boolean isSlot, String name) {
             this.isSlot = isSlot;
             this.name = name;
         }
