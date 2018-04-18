@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/darker_gray">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/background_dark"
+        android:padding="@dimen/fab_margin"
+        android:gravity="center_horizontal"
+        android:textSize="18sp"
+        android:text="拖动滑动器"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_orange_dark" />
+    <com.demoncat.dcapp.widget.DragGridViewPager
+        android:id="@+id/dg_pager"
+        android:layout_width="match_parent"
+        android:layout_height="224dp"
+        android:layout_gravity="center_horizontal"
+        android:hapticFeedbackEnabled="true"
+        android:background="@android:color/background_light"/>
+    <TextView
+        android:id="@+id/tv_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/background_dark"
+        android:padding="@dimen/fab_margin"
+        android:gravity="center_horizontal"
+        android:textSize="18sp"
+        android:text="Page"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_orange_dark" />
+</LinearLayout>
