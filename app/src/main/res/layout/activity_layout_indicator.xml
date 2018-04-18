@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/background_dark"
+        android:padding="@dimen/fab_margin"
+        android:gravity="center_horizontal"
+        android:textSize="18sp"
+        android:text="圆点指示器"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_orange_dark" />
+    <Button android:id="@+id/btn_pre"
+        android:layout_width="120dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:text="Previous"
+        android:background="@android:color/holo_orange_dark"
+        android:textColor="@android:color/holo_blue_dark"/>
+    <Button android:id="@+id/btn_next"
+        android:layout_width="120dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:text="Next"
+        android:background="@android:color/holo_orange_dark"
+        android:textColor="@android:color/holo_blue_dark"/>
+
+    <com.demoncat.dcapp.widget.LayoutIndicator
+        android:id="@+id/indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="14dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:background="@color/colorPrimaryDark"/>
+</LinearLayout>
