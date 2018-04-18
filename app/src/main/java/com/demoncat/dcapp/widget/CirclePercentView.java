@@ -1,4 +1,3 @@
-package com.demoncat.dcapp.widget;
 /**
  * Copyright 2018 hubohua
  * <p>
@@ -14,6 +13,8 @@ package com.demoncat.dcapp.widget;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.demoncat.dcapp.widget;
+
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;

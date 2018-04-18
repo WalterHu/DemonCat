@@ -14,4 +14,10 @@
         <!-- Text center size -->
         <attr name="centerTextSize" format="dimension" />
     </declare-styleable>
+    <declare-styleable name="GradientTextView">
+        <!-- gradient start color -->
+        <attr name="startColor" format="reference|color"/>
+        <!-- gradient end color -->
+        <attr name="endColor" format="reference|color"/>
+    </declare-styleable>
 </resources>
