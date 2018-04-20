@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.demoncat.dcapp.widget.swipetoload.RefreshHeaderView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="52dp"
+        android:background="@android:color/darker_gray">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#33ffffff"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_height="1px"
+            android:background="#33ffffff"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivArrow"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="8dp"
+                android:rotation="180"
+                android:src="@drawable/icon_pull_to_refresh_arrow" />
+
+            <TextView
+                android:id="@+id/tvRefresh"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="下拉刷新"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</com.demoncat.dcapp.widget.swipetoload.RefreshHeaderView>

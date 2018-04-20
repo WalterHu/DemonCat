@@ -19,6 +19,9 @@ android {
     buildToolsVersion '27.0.2'
     productFlavors {
     }
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
 }
 
 dependencies {
@@ -41,4 +44,6 @@ dependencies {
     implementation 'io.reactivex:rxandroid:1.2.1'
     // using by SlidingMenu
     implementation 'com.nineoldandroids:library:2.4.0'
+    // swipe to load
+    implementation 'com.github.Aspsine:SwipeToLoadLayout:1.0.4'
 }
