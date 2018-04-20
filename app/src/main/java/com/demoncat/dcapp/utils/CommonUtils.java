@@ -19,6 +19,8 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import java.util.regex.Pattern;
+
 /**
  * @Class: CommonUtils
  * @Description: Common utils
@@ -86,5 +88,17 @@ public class CommonUtils {
      */
     public static int getScreenWidth(Context context) {
         return context.getResources().getDisplayMetrics().widthPixels;
+    }
+
+    /**
+     * 正则表达式验证
+     *
+     * @param regex 正则表达式
+     * @param param 待匹配的字符串
+     * @return true if matched, else false
+     */
+    public static Boolean regexMatch(String regex, String param) {
+        Pattern pattern = Pattern.compile(regex);
+        return pattern.matcher(param).matches();
     }
 }

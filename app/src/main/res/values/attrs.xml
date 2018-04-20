@@ -27,4 +27,18 @@
     <declare-styleable name="SliddingMenu">
         <attr name="rigthtPadding" format="dimension" />
     </declare-styleable>
+    <declare-styleable name="ClearEditText">
+        <attr name="cet_type">
+            <enum name="common" value="0" />
+            <enum name="plate" value="1" />
+            <enum name="engine" value="2" />
+            <enum name="vin" value="3" />
+            <enum name="pin" value="4" />
+            <enum name="username" value="5" />
+            <enum name="password" value="6" />
+            <enum name="telephone" value="7" />
+            <enum name="search" value="8" />
+        </attr>
+        <attr name="hint_size" format="dimension"/>
+    </declare-styleable>
 </resources>

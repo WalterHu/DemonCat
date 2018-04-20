@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:clear="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/background_dark"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/fab_margin"
+        android:text="清除输入框"
+        android:textColor="@android:color/holo_orange_dark"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@android:color/holo_green_dark">
+
+            <com.demoncat.dcapp.widget.ClearEditText
+                android:id="@+id/input_common"
+                android:layout_width="200dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:gravity="center_vertical"
+                android:hint="普通类型"
+                android:paddingLeft="9dp"
+                clear:cet_type="common" />
+
+            <com.demoncat.dcapp.widget.ClearEditText
+                android:id="@+id/input_plate"
+                android:layout_width="200dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:gravity="center_vertical"
+                android:hint="车牌类型"
+                android:paddingLeft="9dp"
+                clear:cet_type="plate" />
+
+            <com.demoncat.dcapp.widget.ClearEditText
+                android:id="@+id/input_engine"
+                android:layout_width="200dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:gravity="center_vertical"
+                android:hint="发动机号类型"
+                android:paddingLeft="9dp"
+                clear:cet_type="engine" />
+
+            <com.demoncat.dcapp.widget.ClearEditText
+                android:id="@+id/input_vin"
+                android:layout_width="200dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:gravity="center_vertical"
+                android:hint="车架号类型"
+                android:paddingLeft="9dp"
+                clear:cet_type="vin" />
+
+            <com.demoncat.dcapp.widget.ClearEditText
+                android:id="@+id/input_pin"
+                android:layout_width="200dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:gravity="center_vertical"
+                android:hint="PIN类型"
+                android:paddingLeft="9dp"
+                clear:cet_type="pin" />
+
+            <com.demoncat.dcapp.widget.ClearEditText
+                android:id="@+id/input_username"
+                android:layout_width="200dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:gravity="center_vertical"
+                android:hint="用户名类型"
+                android:paddingLeft="9dp"
+                clear:cet_type="username" />
+
+            <com.demoncat.dcapp.widget.ClearEditText
+                android:id="@+id/input_password"
+                android:layout_width="200dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:gravity="center_vertical"
+                android:hint="密码类型"
+                android:paddingLeft="9dp"
+                clear:cet_type="password" />
+
+            <com.demoncat.dcapp.widget.ClearEditText
+                android:id="@+id/input_telephone"
+                android:layout_width="200dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:gravity="center_vertical"
+                android:hint="电话类型"
+                android:paddingLeft="9dp"
+                clear:cet_type="telephone" />
+
+            <com.demoncat.dcapp.widget.ClearEditText
+                android:id="@+id/input_search"
+                android:layout_width="200dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:gravity="center_vertical"
+                android:hint="搜索类型"
+                android:paddingLeft="9dp"
+                clear:cet_type="search" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
