@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:scroll="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/background_dark"
+        android:padding="@dimen/fab_margin"
+        android:gravity="center_horizontal"
+        android:textSize="18sp"
+        android:text="ScrollLayout"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_orange_dark" />
+    <com.demoncat.dcapp.widget.scrolllayout.ScrollLayout
+        android:id="@+id/scroll_down_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tv_title">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:descendantFocusability="blocksDescendants">
+            <com.demoncat.dcapp.widget.scrolllayout.content.ScrollRecycleView
+                android:id="@+id/scroll_recycle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/holo_green_dark"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:fillViewport="true"
+                android:orientation="vertical"
+                android:overScrollMode="never"
+                android:paddingBottom="13dp"
+                android:paddingTop="13dp" />
+        </RelativeLayout>
+    </com.demoncat.dcapp.widget.scrolllayout.ScrollLayout>
+</RelativeLayout>
