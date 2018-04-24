@@ -21,8 +21,11 @@ import android.os.HandlerThread;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.HorizontalScrollView;
+import android.widget.RelativeLayout;
 
 /**
  * @Class: InfiniteHorizontalScrollView
@@ -47,7 +50,11 @@ public class InfiniteHorizontalScrollView extends HorizontalScrollView {
     private Handler mCheckStateHandler;
     private int mCheckSameCount; // The same value happened count
 
+    private boolean mAutoFixAngle = false;
     private boolean mScrollEnable = true;
+
+    private RelativeLayout mScrollContentRoot;
+    private View mScrollContent;
 
     /**
      * Current scroll type for user interaction
@@ -58,13 +65,19 @@ public class InfiniteHorizontalScrollView extends HorizontalScrollView {
         FLING
     }
 
+    private int mScreenWidth; // current screen width. Here we put screen with * 3 as the screen per size.
+    private int mSwitchStep = 1; // default switch step for one vehicle image switch to next
+    private int mScrollPer; // vehicle scrolling of 45 angles corresponds to screen width * 3
+    private int srcNum; // current scroll angle for 360.
+
     private int mLastAction; // last motion event
     private ScrollType mScrollType = ScrollType.IDLE; // default scroll type
-    private int mScreenWidth; // current screen width. Here we put screen with * 3 as the screen per size.
     private float mLastEventX; // last motion event on Axis X
     private int mMoveDirection = -1; // whether moves to left direction. Should be (MOVE_ACTION_LEFT, MOVE_ACTION_RIGHT)
     private static final int MOVE_ACTION_LEFT = 0;
     private static final int MOVE_ACTION_RIGHT = 1;
+
+    private Handler mHandler = new Handler();
 
     // Runnable to check the position to
     // decide what scroll type is currently.
@@ -83,6 +96,7 @@ public class InfiniteHorizontalScrollView extends HorizontalScrollView {
                 mScrollType = ScrollType.IDLE;
                 if (mCheckSameCount >= 3 && lastType == mScrollType) {
                     mCheckSameCount = 0; // reset
+                    autoScrollToQuaterAngle(mScrollType, currScrollX);
                     if (mListener != null) {
                         mListener.onScrollStateChanged(mScrollType);
                     }
@@ -94,6 +108,7 @@ public class InfiniteHorizontalScrollView extends HorizontalScrollView {
             } else {
                 // Still scrolling
                 mScrollType = ScrollType.FLING;
+                autoScrollToQuaterAngle(mScrollType, currScrollX);
                 if (mListener != null) {
                     mListener.onScrollStateChanged(mScrollType);
                 }
@@ -102,8 +117,6 @@ public class InfiniteHorizontalScrollView extends HorizontalScrollView {
             }
         }
     };
-
-    private Handler mHandler = new Handler();
 
     public InfiniteHorizontalScrollView(Context context) {
         super(context);
@@ -126,17 +139,56 @@ public class InfiniteHorizontalScrollView extends HorizontalScrollView {
         mCheckStateHandler = new Handler(mCheckStateThread.getLooper());
         WindowManager wm
                 = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        mScreenWidth = wm.getDefaultDisplay().getWidth();
+        int screenWidth = wm.getDefaultDisplay().getWidth();
+        mScreenWidth = screenWidth * 3;
+        // switch step in pixels distance for 1 angles in 360
+        mSwitchStep = (int) (mScreenWidth / 360.0 + 0.5);
+        // quarter angle (45) for distance in pixels
+        mScrollPer = mScreenWidth / 8;
+        // add content sub root view
+        mScrollContentRoot = new RelativeLayout(getContext());
+        ViewGroup.LayoutParams params = mScrollContentRoot.getLayoutParams();
+        if (params == null) {
+            params =
+                    new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT);
+        }
+        mScrollContentRoot.setLayoutParams(params);
+        // add content sub view
+        mScrollContent = new View(getContext());
+        params = mScrollContent.getLayoutParams();
+        if (params == null) {
+            params =
+                    new ViewGroup.LayoutParams(screenWidth * 10, // 10 times of screen width
+                            ViewGroup.LayoutParams.MATCH_PARENT);
+        }
+        // set the width of content view to 10 times of screen width
+        params.width = screenWidth * 10;
+        mScrollContent.setLayoutParams(params);
+        setSmoothScrollingEnabled(true);
     }
 
-    /**
-     * On scroll change listener.
-     * Callback interface for user.
-     */
-    public interface OnScrollChangeListener {
-        void onScrollChanged(int scrollX);
-        void onScrollStateChanged(ScrollType type);
-        void onVehicleClick();
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        mScrollContentRoot.addView(mScrollContent);
+        addView(mScrollContentRoot);
+        Log.d(TAG, "onAttachedToWindow scroll x: " + getScrollX());
+        // init the vehicle scroll state to first per screen size position
+        // here we use handler to delay handle the reset scroll action
+        // because call directly does not work
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                resetScroll();
+            }
+        }, 1000l);
+    }
+
+    @Override
+    public void onViewAdded(View child) {
+        super.onViewAdded(child);
+        Log.d(TAG, "onViewAdded scroll x: " + getScrollX() + ", view: " + child);
     }
 
     /**
@@ -155,6 +207,23 @@ public class InfiniteHorizontalScrollView extends HorizontalScrollView {
         mScrollEnable = enable;
     }
 
+    /**
+     * Set auto scroll to quarter angle (45/90/135...)
+     * when scroll finished.
+     * @param autoFixAngle
+     */
+    public void setAutoFixAngle(boolean autoFixAngle) {
+        mAutoFixAngle = autoFixAngle;
+    }
+
+    /**
+     * Is auto fix quarter angle.
+     * @return
+     */
+    public boolean isAutoFixAngle() {
+        return mAutoFixAngle;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         if (!mScrollEnable) {
@@ -170,6 +239,7 @@ public class InfiniteHorizontalScrollView extends HorizontalScrollView {
                 resetMoveScroll(ev.getX(), mLastEventX);
                 mLastEventX = ev.getX();
                 mScrollType = ScrollType.TOUCH_SCROLL;
+                autoScrollToQuaterAngle(mScrollType, getScrollX());
                 if (mListener != null) {
                     mListener.onScrollStateChanged(mScrollType);
                 }
@@ -195,7 +265,8 @@ public class InfiniteHorizontalScrollView extends HorizontalScrollView {
      * Reset scroll position
      */
     public void resetScroll() {
-        scrollTo(mScreenWidth * 3, 0);
+        Log.d(TAG, "reset scroll.");
+        scrollTo(mScreenWidth, 0);
     }
 
     // reset move action scroll position to new X
@@ -214,16 +285,16 @@ public class InfiniteHorizontalScrollView extends HorizontalScrollView {
         mMoveDirection = moveDirection;
         if (mMoveDirection == MOVE_ACTION_LEFT) {
             // silding to left
-            final int scrollXLeft = (getScrollX() % (mScreenWidth * 3) + (mScreenWidth * 3) * 2);
+            final int scrollXLeft = (getScrollX() % mScreenWidth + mScreenWidth * 2);
             Log.d(TAG, "resetMoveScroll moveDirection MOVE_ACTION_LEFT scrollXLeft: " + scrollXLeft +
                     ", getScrollX(): " + getScrollX());
             scrollTo(scrollXLeft, 0);
         } else if (mMoveDirection == MOVE_ACTION_RIGHT) {
             // sliding to right
-            final int scrollXRight = (getScrollX() % (mScreenWidth * 3));
+            final int scrollXRight = (getScrollX() % mScreenWidth);
             Log.d(TAG, "resetMoveScroll moveDirection MOVE_ACTION_RIGHT scrollXRight: " + scrollXRight +
                     ", getScrollX(): " + getScrollX());
-            scrollTo(getScrollX() % (mScreenWidth * 3), 0); // scroll part
+            scrollTo(getScrollX() % mScreenWidth, 0); // scroll part
         }
     }
 
@@ -250,6 +321,7 @@ public class InfiniteHorizontalScrollView extends HorizontalScrollView {
 
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        Log.d(TAG, "onScrollChanged l: " + l + ", mCurrScrollX: " + mCurrScrollX);
         super.onScrollChanged(l, t, oldl, oldt);
         int measureWidth = getMeasuredWidth();
         int childMeasureWidth = getChildAt(0).getMeasuredWidth();
@@ -280,7 +352,42 @@ public class InfiniteHorizontalScrollView extends HorizontalScrollView {
             mLastReachRight = false;
         }
         if (mListener != null) {
-            mListener.onScrollChanged(mCurrScrollX);
+            mListener.onScrollChanged(calculateImageIndex(mCurrScrollX));
+        }
+    }
+
+    // calculate current scroll index in 360.
+    // srcNum [0, 360)
+    private int calculateImageIndex(int scrollX) {
+        int index = (int) (scrollX  * 1.0 / mSwitchStep + 0.5);
+        Log.d(TAG, "calculateImageIndex scrollX: " + scrollX
+                + ", mSwitchStep: " + mSwitchStep + ", index: " + index);
+        index += 90; // add 90 for image name (vehicle image state)
+        if (index >= 360) {
+            index = (index % 360);
+        }
+        Log.d(TAG, "calculateImageIndex index: " + index);
+        if (index >= 0 && srcNum != index) {
+            srcNum = index;
+            return srcNum;
+        }
+        return -1;
+    }
+
+    // Auto-scroll to scroll
+    private void autoScrollToQuaterAngle(ScrollType type, int scrollX) {
+        if (mAutoFixAngle &&
+                type == InfiniteHorizontalScrollView.ScrollType.IDLE) {
+            // When scrolling stops, we find the nearest angle to scroll to.
+            // The angle is integer times of 45 angle.
+            int nextIndex = scrollX / mScrollPer;
+            int t = scrollX % mScrollPer;
+            if (t > mScrollPer / 2) {
+                nextIndex ++;
+            }
+            // Scroll to index
+            int targetScrollX = nextIndex * mScrollPer;
+            smoothScrollTo(targetScrollX, 0);
         }
     }
 
@@ -315,5 +422,15 @@ public class InfiniteHorizontalScrollView extends HorizontalScrollView {
                 Log.d(TAG, "scroll to end.");
             }
         });
+    }
+
+    /**
+     * On scroll change listener.
+     * Callback interface for user.
+     */
+    public interface OnScrollChangeListener {
+        void onScrollChanged(int index);
+        void onScrollStateChanged(ScrollType type);
+        void onVehicleClick();
     }
 }
