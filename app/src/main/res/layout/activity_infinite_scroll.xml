@@ -1,0 +1,48 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/background_dark"
+        android:padding="@dimen/fab_margin"
+        android:gravity="center_horizontal"
+        android:textSize="18sp"
+        android:text="水平无限滚动"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_orange_dark" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/img_vehicle"
+            android:layout_width="250dp"
+            android:layout_height="111dp"
+            android:layout_centerInParent="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/p1"/>
+
+        <com.demoncat.dcapp.widget.InfiniteHorizontalScrollView
+            android:id="@+id/hori_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="horizontal"
+            android:overScrollMode="never">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <View android:id="@+id/scroll_content"
+                    android:layout_width="3600dp"
+                    android:layout_height="match_parent"/>
+            </RelativeLayout>
+
+        </com.demoncat.dcapp.widget.InfiniteHorizontalScrollView>
+    </RelativeLayout>
+</LinearLayout>

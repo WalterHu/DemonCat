@@ -19,6 +19,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import java.lang.reflect.Field;
 import java.util.regex.Pattern;
 
 /**
@@ -100,5 +101,23 @@ public class CommonUtils {
     public static Boolean regexMatch(String regex, String param) {
         Pattern pattern = Pattern.compile(regex);
         return pattern.matcher(param).matches();
+    }
+
+    /**
+     * Get resource id from resource type and name
+     * getResId("icon", R.drawable.class);
+     *
+     * @param variableName
+     * @param c
+     * @return
+     */
+    public static int getResId(String variableName, Class<?> c) {
+        try {
+            Field idField = c.getDeclaredField(variableName);
+            return idField.getInt(idField);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 }
