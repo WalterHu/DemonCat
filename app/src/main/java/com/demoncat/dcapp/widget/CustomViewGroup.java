@@ -101,18 +101,20 @@ public class CustomViewGroup extends ViewGroup {
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i ++) {
             View child = getChildAt(i);
-            // measureChild(child, widthMeasureSpec, heightMeasureSpec);
+            int specWidth = MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY);
+            int specHeight = MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY);
+            child.measure(specWidth, specHeight);
             // 把子View的左上角坐标存储到我们自定义的LayoutParams的left和top二个字段中，Layout阶段会使用
-            LayoutParams lParams = (LayoutParams) child.getLayoutParams();
-            lParams.left = (i % 3) * (childWidth + hSpace);
-            lParams.top = (i / 3) * (childHeight + vSpace);
+//            LayoutParams lParams = (LayoutParams) child.getLayoutParams();
+//            lParams.left = (i % 3) * (childWidth + hSpace);
+//            lParams.top = (i / 3) * (childHeight + vSpace);
         }
         int vw = rw;
         int vh = rh;
         if (childCount < 3) {
             vw = childCount * (childWidth + hSpace);
         }
-        vh = ((childCount + 3) / 3) * (childHeight + vSpace);
+        vh = ((childCount + 3) / 3) * (childHeight + vSpace) + vSpace;
         setMeasuredDimension(vw, vh);
     }
 
@@ -123,6 +125,8 @@ public class CustomViewGroup extends ViewGroup {
         for (int i = 0; i < childCount; i ++) {
             View child = getChildAt(i);
             LayoutParams params = (LayoutParams) child.getLayoutParams();
+            params.left = (i % 3) * (childWidth + hSpace);
+            params.top = (i / 3) * (childHeight + vSpace) + vSpace;
             child.layout(params.left, params.top,
                     params.left + childWidth, params.top + childHeight);
             Log.d(TAG, "onLayout - i: " + i + ", size: " + mImageResArrayList.size());
