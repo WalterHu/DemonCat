@@ -54,4 +54,8 @@
         <attr name="allowHorizontalScroll" format="boolean" />
         <attr name="isSupportExit" format="boolean" />
     </declare-styleable>
+    <declare-styleable name="CustomViewGroup">
+        <attr name="hSpace" format="dimension" />
+        <attr name="wSpace" format="dimension" />
+    </declare-styleable>
 </resources>
