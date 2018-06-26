@@ -19,6 +19,8 @@ import android.app.Application;
 
 import com.demoncat.dcapp.network.ServiceFactory;
 
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+
 import java.security.Security;
 
 /**
@@ -31,12 +33,13 @@ public class DemonCatApp extends Application {
     private static DemonCatApp mInstance;
 
     static {
+        BouncyCastleProvider bouncyCastleProvider =
+                new org.spongycastle.jce.provider.BouncyCastleProvider();
         // set default JCA/JCE structure to BouncyCastleProvider
-        Security.insertProviderAt(
-                new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
+        Security.insertProviderAt(bouncyCastleProvider, 1);
         // add JSSE(SSL/TLS) structure to BouncyCastleJsseProvider
         Security.addProvider(
-                new org.spongycastle.jsse.provider.BouncyCastleJsseProvider());
+                new org.spongycastle.jsse.provider.BouncyCastleJsseProvider(bouncyCastleProvider));
     }
 
     @Override
