@@ -20,8 +20,12 @@ import android.graphics.Bitmap;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.TrustManagerFactory;
+
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
+import okhttp3.internal.tls.OkHostnameVerifier;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -79,6 +83,10 @@ public class ServiceFactory {
         File file = new File(sContext.getExternalCacheDir(),
                 Configuration.HTTP_CACHE_DIR);
         Cache cache = new Cache(file, Configuration.HTTP_CACHE_SIZE);
+
+        TrustManagerFactory factory =
+                SSLHelper.getTrustManagerFactory(); // SC JSSE provider factory
+
         mClient = builder
                 .retryOnConnectionFailure(true)
                 .connectTimeout(Configuration.HTTP_CONNECT_TIMEOUT, TimeUnit.SECONDS)
@@ -87,6 +95,11 @@ public class ServiceFactory {
                 .addInterceptor(new CacheInterceptor()) // ? application interceptor
                 .addNetworkInterceptor(new CacheInterceptor()) // ? network interceptor
                 .cache(cache)
+                .sslSocketFactory(
+                        SSLHelper.getSSLSocketFactoryLocally(
+                                sContext, "CERT_FILE", factory),
+                        SSLHelper.getX509TrustManager(factory))
+                .hostnameVerifier(OkHostnameVerifier.INSTANCE)
                 .build();
         // init retrofit
         mRetrofit = new Retrofit.Builder()
