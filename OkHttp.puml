@@ -140,12 +140,11 @@ note left of StreamAllocation
 "1.StreamAllocation是
 Connections/Streams/Calls
 的关系维护者。
-2.支持取消异步请求。
-3.返回Connection时，
+2.返回Connection时，
 先查找已经存在的，
 若没有就从链接池中查找，
 若没有就重新创建Connection。
-4.通过调用newStream可以
+3.通过调用newStream可以
 获取一个HttpCodec实现，
 若当前是HTTP1则创建Http1Codec；
 否则创建Http2Codec对象。"
@@ -159,7 +158,12 @@ note right of Http1Codec
 "HTTP请求/响应数据流处理对象。
 1.开启输出流，写入请求头
 2.写入请求体数据
-3.开启输入流，读取服务器数据"
+3.开启输入流，读取服务器数据
+4.作为输入输出流表示一个http请求，
+StreamAllocation会找到可以给新流
+作复用的RealConnection链接，
+http1.x仅支持一对流。http2.x则
+支持多对流复用一个RealConnection。"
 end note
 
 class RealConnection {
@@ -178,14 +182,18 @@ class RealConnection {
 }
 
 note right of RealConnection
-"RealConnection表示一次TCP链接。
+"RealConnection表示一次socket链接。
 其内包括rawSocket，表示连接层Socket链接。
 还包括socket，表示高于链接层的Socket链接，
 即SSL或者TLS。
-其内包括握手协议对象，表示当前握手状态。
-它是链接的核心部分。
-在StreamAllocation中创建后，即
-添加到ConnectionPool中，并直接开始链接。"
+其内包括握手协议对象，表示当前握手数据。
+它是链接的核心部分。在StreamAllocation
+中创建后，即添加到ConnectionPool中
+，并直接开始链接。其内保存有StreamAllocation
+的引用列表，http1版本下仅支持1对1关系。
+HTTP2版本则支持一个1对多关系。
+不再使用的connection需要释放，并标记
+noNewStreams为true。"
 end note
 
 class Address {
@@ -200,6 +208,13 @@ HostnameVerifier等。"
 end note
 
 class ConnectionPool
+
+note left of ConnectionPool
+"链接池，管理所有已经创建的链接。
+达到链接复用以减少延迟和损耗。
+其内有一个ThreadPoolExecutor，
+使用后台线程来回收长时间不使用的链接。"
+end note
 
 class ConnectInterceptor {
     -client:OkHttpClient
@@ -250,7 +265,7 @@ HttpCodec --o RealInterceptorChain
 
 HttpCodec --o StreamAllocation
 
-RealConnection --o StreamAllocation
+RealConnection o--o StreamAllocation
 
 ConnectInterceptor ..> StreamAllocation
 
