@@ -1,0 +1,45 @@
+@startuml
+
+interface Observer {
+    +onStart():void
+    +onError(Throwable):void
+    +onNext(Response):void
+}
+
+class Callback {
+    +onSuccess(Response):void
+    +onFailure(Error):void
+}
+
+Callback ..|> Observer
+class Error
+abstract class Response
+
+Callback ..> Error
+Callback ..> Response
+
+class BasePresenter {
+    -view:View
+    +Action():void
+}
+
+interface View {
+    +onActionResponse(Response):void
+}
+
+class BaseView {
+    -presenter:BasePresenter
+}
+
+BasePresenter ..> BaseModel
+BasePresenter --|> Callback
+BaseView ..|> View
+BasePresenter *--o BaseView
+
+class BaseModel {
+    +requestAction(Callback):void
+}
+
+BaseModel ..> Callback
+
+@enduml

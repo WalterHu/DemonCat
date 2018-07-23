@@ -1,0 +1,293 @@
+@startuml
+
+interface Factory {
+    +newCall(Request):Call
+}
+
+class OkHttpClient {
+    ~dispatcher:Dispatcher
+    +dispatcher():Dispatcher
+}
+
+note left of OkHttpClient
+"OkHttpClient是创建Call的工厂类"
+end note
+
+
+interface ExecutorService
+class ThreadPoolExecutor {
+    +execute(Runnable):void
+}
+
+note right of ThreadPoolExecutor
+"Java下的线程池任务管理服务。
+在Dispatcher中，用来异步运行AsyncCall。"
+end note
+
+class Dispatcher {
+    -maxRequests:int
+    -maxRequestsPerHost:int
+    -executorService:ExecutorService
+    -readyAsyncCalls:Deque<AsyncCall>
+    -runningAsyncCalls:Deque<AsyncCall>
+    -runningSyncCalls:Deque<RealCall>
+    ~executed(RealCall):void
+    ~finished(RealCall):void
+    ~enqueue(AsyncCall):void
+    ~finished(AsyncCall):void
+    -promoteCalls():void
+}
+
+note right of Dispatcher
+"RealCall与AsyncCall
+同步/异步执行的策略管理者。
+主要使用线程池服务来管理异步请求。"
+end note
+
+class Request
+class Response
+
+interface Call {
+    +execute():Response
+    +enqueue(Callback):void
+}
+
+note left of Call
+"Call代表一个请求，可以被取消。
+其表示单个请求/响应对，并且
+不能够执行两次。"
+end note
+
+interface Interceptor {
+    +intercept(Chain):Response
+}
+
+note right of Interceptor
+"请求响应拦截器。
+可以在请求发送前
+或
+结果返回后进行修改。"
+end note
+
+class RetryAndFollowUpInterceptor {
+    -client:OkHttpClient
+    -streamAllocation:StreamAllocation
+    +cancel():void
+    +streamAllocation():StreamAllocation
+    --createAddress(HttpUrl):Address
+}
+
+note right of RetryAndFollowUpInterceptor
+"请求失败重试拦截器。
+其内创建StreamAllocation。
+每个RealCall对象都会创建一个新实例。"
+end note
+
+class RealCall {
+    ~client:Response
+    ~retryAndFollowUpInterceptor:RetryAndFollowUpInterceptor
+    ~getResponseWithInterceptorChain():Response
+}
+
+abstract class NamedRunnable
+
+class AsyncCall {
+     ~responseCallback:Callback
+     ~AsyncCall(Callback)
+     #execute():void
+}
+
+note left of AsyncCall
+"AsyncCall是RealCall的内部类。
+表示异步请求。"
+end note
+
+interface Callback {
+    +onFailure(Call, IOException):void
+    +onResponse(Call, Response):void
+}
+
+class RealInterceptorChain {
+    -interceptors:List<Interceptor>
+    -streamAllocation:StreamAllocation
+    -call:Call
+    -request:Request
+    +proceed(Request):Response
+    +proceed(Request,StreamAllocation,HttpCodec,RealConnection):Response
+}
+
+note bottom of RealInterceptorChain
+"拦截器对象链。
+按照顺序管理着所有拦截器对象。
+使用责任链模式。
+每一个拦截器仅处理该处理的部分，
+然后交付给剩下的拦截器依次处理。"
+end note
+
+class StreamAllocation {
+    +address:Address
+    +connectionPool:ConnectionPool
+    -connection:RealConnection
+    -canceled:boolean
+    -codec:HttpCodec
+    +newStream(OkHttpClient,Chain,boolean):HttpCodec
+    -findHealthyConnection(int,int,int,int,boolean,
+           boolean):RealConnection
+    -findConnection(int,int,int,int,boolean):RealConnection
+}
+
+note left of StreamAllocation
+"1.StreamAllocation是
+Connections/Streams/Calls
+的关系维护者。
+2.支持取消异步请求。
+3.返回Connection时，
+先查找已经存在的，
+若没有就从链接池中查找，
+若没有就重新创建Connection。
+4.通过调用newStream可以
+获取一个HttpCodec实现，
+若当前是HTTP1则创建Http1Codec；
+否则创建Http2Codec对象。"
+end note
+
+interface HttpCodec
+class Http1Codec {
+}
+
+note right of Http1Codec
+"HTTP请求/响应数据流处理对象。
+1.开启输出流，写入请求头
+2.写入请求体数据
+3.开启输入流，读取服务器数据"
+end note
+
+class RealConnection {
+    -rawSocket:Socket
+    -socket:Socket
+    -handshake:Handshake
+    -source:BufferedSource
+    -sink:BufferedSink
+    -allocationLimit:int
+    -allocations:List<Reference<StreamAllocation>>
+    -noNewStreams:boolean
+    +connect(int,int,int,List<ConnectionSpec>,boolean):void
+    -buildConnection(int,int,int,ConnectionSpecSelector):void
+    -connectSocket(int,int):void
+    -establishProtocol(int,int,ConnectionSpecSelector):void
+}
+
+note right of RealConnection
+"RealConnection表示一次TCP链接。
+其内包括rawSocket，表示连接层Socket链接。
+还包括socket，表示高于链接层的Socket链接，
+即SSL或者TLS。
+其内包括握手协议对象，表示当前握手状态。
+它是链接的核心部分。
+在StreamAllocation中创建后，即
+添加到ConnectionPool中，并直接开始链接。"
+end note
+
+class Address {
+    ~sslSocketFactory:SSLSocketFactory
+    ~hostnameVerifier:HostnameVerifier
+}
+
+note left of Address
+"记录请求目标地址的信息，
+比如sslSocketFactory，
+HostnameVerifier等。"
+end note
+
+class ConnectionPool
+
+class ConnectInterceptor {
+    -client:OkHttpClient
+}
+
+note left of ConnectInterceptor
+"链接拦截器。
+会在其内调用StreamAllocation
+完成HttpCodec创建。"
+end note
+
+class BufferedSource
+
+note left of BufferedSource
+"Socket读取数据流的buffer对象。
+使用Okio.source(Socket)创建。
+若链接使用TLS，则创建的source基于sslsocket。"
+end note
+
+class BufferedSink
+
+note right of BufferedSink
+"Socket写出数据流的buffer对象。
+使用Okio.sink(Socket)创建。
+若链接使用TLS，则创建的sink基于sslsocket。"
+end note
+
+class CallServerInterceptor
+
+note right of CallServerInterceptor
+"调用服务拦截器，
+拦截链中的最后一个拦截器，
+通过网络调用服务器。
+通过HttpCodec依次次进行写请求头、
+请求头（可选）、读响应头、读响应体。"
+end note
+
+CallServerInterceptor ..> HttpCodec
+CallServerInterceptor ..|> Interceptor
+CallServerInterceptor ..> RealInterceptorChain
+
+RealConnection --o BufferedSource
+RealConnection --o BufferedSink
+
+Http1Codec ..|> HttpCodec
+
+HttpCodec --o RealInterceptorChain
+
+HttpCodec --o StreamAllocation
+
+RealConnection --o StreamAllocation
+
+ConnectInterceptor ..> StreamAllocation
+
+ConnectInterceptor ..|> Interceptor
+
+ConnectionPool --* OkHttpClient
+
+Interceptor --o RealInterceptorChain
+
+RealCall --* RealInterceptorChain
+
+RealInterceptorChain *-- StreamAllocation
+
+StreamAllocation *-- Address
+
+RetryAndFollowUpInterceptor o-- StreamAllocation
+
+ThreadPoolExecutor ..|> ExecutorService
+Dispatcher --> ThreadPoolExecutor
+Interceptor --o OkHttpClient
+OkHttpClient --* ConnectInterceptor
+OkHttpClient --* RetryAndFollowUpInterceptor
+Interceptor <|.. RetryAndFollowUpInterceptor
+RealCall *--  RetryAndFollowUpInterceptor
+Request --* RealCall
+Response <.. RealCall
+Callback <.. RealCall
+Callback --* AsyncCall
+
+NamedRunnable <|-- AsyncCall
+RealCall *-- OkHttpClient
+Call <|.. RealCall
+
+Factory <|.. OkHttpClient
+OkHttpClient *-- Dispatcher
+
+RealCall --o Dispatcher
+AsyncCall --o Dispatcher
+
+@enduml
