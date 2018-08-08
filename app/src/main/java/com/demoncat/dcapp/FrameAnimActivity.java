@@ -15,14 +15,19 @@
  */
 package com.demoncat.dcapp;
 
-import android.animation.Animator;
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.demoncat.dcapp.widget.FrameAnimation;
+import com.demoncat.dcapp.widget.GlideRoundTransform;
 
 /**
  * @Class: FrameAnimActivity
@@ -55,5 +60,27 @@ public class FrameAnimActivity extends Activity {
             }
         });
         frameAnimation.start();
+        Configuration configuration = getResources().getConfiguration();
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        Log.d("test", "height: " + metrics.heightPixels + ", width: " + metrics.widthPixels);
+        Log.d("test", "configuration.smallestScreenWidthDp: " + configuration.smallestScreenWidthDp);
+        final ImageView imageView = findViewById(R.id.image_view);
+        Log.d("test", "imageView: " + imageView);
+        GlideRoundTransform transformation =
+                new GlideRoundTransform(getApplicationContext(),
+                        dip2px(getApplicationContext(), 10));
+        transformation.setExceptCorner(false, false, false, false);
+        Glide.with(this).load("https://203.93.252.29:18088/cherym31t/m31t/download/?id=MS5qcGc=").
+                asBitmap().
+                skipMemoryCache(true).
+                placeholder(R.drawable.banner_default).
+                error(R.drawable.banner_default).
+                transform(transformation).into(imageView);
+    }
+
+    public static int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
     }
 }

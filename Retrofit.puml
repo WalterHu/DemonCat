@@ -1,0 +1,257 @@
+@startuml
+
+note top of Retrofit
+"Retrofit默认使用OkHttp网络请求框架。
+Retrofit内部的属性基本与Builder一致。
+Retrofit创建的Class<T>的对象，定义的
+类型必须是interface，并且没有继承的父类。"
+end note
+
+class Retrofit {
+    -serviceMethodCache:Map<Method, ServiceMethod<?>>
+    +create(Class<T>):T
+    ~eagerlyValidateMethods(Class<?>):void
+    ~loadServiceMethod(Method):ServiceMethod<?>
+    +callAdapter(Type,Annotation[]):CallAdapter<?, ?>
+}
+
+note bottom of Retrofit
+"Retrofit的create方法，使用
+Java的Proxy方式，创建Class<T>类的
+代理类。使用InvocationHandler来调用
+对应的方法，若方法是普通的Object方法，
+则直接invoke。否则，调用loadServiceMethod方法。"
+end note
+
+class ServiceMethod<T> {
+    ~parseAnnotations(Retrofit, Method):ServiceMethod<T>
+}
+
+ServiceMethod --o Retrofit
+
+note top of ServiceMethod
+"检查定义的Class<T>类的方法
+返回值是否满足要求，并解析。
+T表示Class<?>中定义方法的返回值。
+其与一次请求是一一对应的关系。"
+end note
+
+class HttpServiceMethod<ResponseT, ReturnT> {
+    -requestFactory:RequestFactory
+    -callFactory:Factory
+    -callAdapter:CallAdapter<ResponseT, ReturnT>
+    -responseConverter:Converter<ResponseBody, ResponseT>
+}
+
+class HttpServiceMethod.Builder<ResponseT, ReturnT> {
+    ~retrofit:Retrofit
+    ~method:Method
+    ~requestFactory:RequestFactory
+    ~responseType:Type
+    ~responseConverter:Converter<ResponseBody, ResponseT>
+    ~callAdapter:CallAdapter<ResponseT, ReturnT>
+    +build():HttpServiceMethod
+    -createCallAdapter():CallAdapter<ResponseT, ReturnT>
+}
+
+HttpServiceMethod ..> HttpServiceMethod.Builder
+
+note top of HttpServiceMethod
+"将接口方法调用转化成HTTP请求的适配器。
+ReturnT即表示当前请求调用的方法的返回值。
+ResponseT即表示当前请求网络数据的转换类型。
+ReturnT可以理解为Call或者Observable。
+ResponseT可以理解为JSON转化ReponseBody得到的Bean类型。"
+end note
+
+HttpServiceMethod --|> ServiceMethod
+
+class RequestFactory {
+    -baseUrl:HttpUrl
+    -httpMethod:String
+    -relativeUrl:String
+    -headers:Headers
+    -contentType:MediaType
+    -hasBody:boolean
+    -isFormEncoded:boolean
+    -isMultipart:boolean
+    -parameterHandlers:ParameterHandler<?>[]
+    ~parseAnnotations(Retrofit,Method):RequestFactory
+    ~create(@Nullable Object[] args):Request
+}
+
+class RequestFactory.Builder {
+    ~retrofit:Retrofit
+    ~method:Method
+    ~methodAnnotations:Annotation[]
+    ~parameterAnnotationsArray Annotation[][]
+    ~parameterTypes:Type[]
+    ~gotField:boolean
+    ~gotPart:boolean
+    ~gotBody:boolean
+    ~gotPath:boolean
+    ~gotQuery:boolean
+    ~gotUrl:boolean
+    ~httpMethod:boolean
+    ~hasBody:boolean
+    ~isFormEncoded:boolean
+    ~isMultipart:boolean
+    ~relativeUrl:boolean
+    ~headers:Headers
+    ~contentType:MediaType
+    ~relativeUrlParamNames:Set<String>
+    ~parameterHandlers:ParameterHandler<?>[]
+    -parseMethodAnnotation(Annotation):void
+    -parseHttpMethodAndPath(String,String,boolean):void
+    -parseParameter(int,Type,Annotation[]):ParameterHandler<?>
+    -parseParameterAnnotation(int,Type,Annotation[],Annotation):ParameterHandler<?>
+}
+
+note right of RequestFactory.Builder
+"parseMethodAnnotation方法会
+针对请求的Method的注解内容解析，
+主要是Retrofit注解写法中的，
+Headers、Get或者Post等HTTP类型等。
+parseHttpMethodAndPath主要根据HTTP请求类型，
+注解中的值，是否有body参数来进行请求解析。
+parseParameterAnnotation方法主要根据当前参数
+的类型、参数注解的内容进行解析，排除重复定义的属性，
+包括Url、Query、Path等注解类型。
+*RequestFactory是对请求的封装，通过create方法
+提供okhttp3的Request对象。"
+end note
+
+RequestFactory ..> RequestFactory.Builder
+HttpServiceMethod ..> RequestFactory
+
+class RequestBuilder {
+}
+
+RequestFactory ..> RequestBuilder
+
+note top of RequestBuilder
+"RequestBuilder是使用okhttp3的
+Request.Builder对请求本身进行封装。
+由RequestFactory完成创建，并且使用其
+parameterHandlers解析完的参数进行填充
+创建Request对象。"
+end note
+
+class Retrofit.Builder {
+    -platform:Platform
+    -callFactory:Factory
+    -baseUrl:HttpUrl
+    -converterFactories:List<Converter.Factory>
+    -callAdapterFactories:List<CallAdapter.Factory>
+    -callbackExecutor:Executor
+    +Builder()
+    ~Builder(Platform)
+    +client(OkHttpClient):Retrofit.Builder
+    +addConverterFactory(Converter.Factory):Retrofit.Builder
+    +addCallAdapterFactory(CallAdapter.Factory):Retrofit.Builder
+    +build():Retrofit
+}
+
+note top of Retrofit.Builder
+"Builder中的callFactory即是OkHttpClient对象。
+此处是直接接口化了okhttp3的Call.Factory。"
+end note
+
+Retrofit ..> Retrofit.Builder
+
+class Converter.Factory
+
+Converter.Factory --* Retrofit.Builder
+
+class GsonConverterFactory
+
+GsonConverterFactory --|> Converter.Factory
+
+class BuiltInConverters
+
+BuiltInConverters --|> Converter.Factory
+
+note top of BuiltInConverters
+"通过Builder创建Retrofit对象时，
+会自动增加一个内置的Converters。"
+end note
+
+class CallAdapter.Factory
+
+CallAdapter.Factory --* Retrofit.Builder
+
+class RxJavaCallAdapterFactory {
+    get(Type,Annotation[],Retrofit):CallAdapter<?,?>
+}
+
+note top of RxJavaCallAdapterFactory
+"通过method返回类型以及注解，返回合适的CallAdapter。
+get方法中，从泛型返回中，一层层的判断并剥离出实际类型，得到
+responseType（Response、Result和其他类型，其他类型表示body转换）。
+此处是RxJavaCallAdapter。"
+end note
+
+RxJavaCallAdapterFactory ..|> CallAdapter.Factory
+
+class RxJavaCallAdapter {
+}
+
+RxJavaCallAdapterFactory ..> RxJavaCallAdapter
+
+class ExecutorCallAdapterFactory {
+    -callbackExecutor:Executor
+}
+
+ExecutorCallAdapterFactory ..|> CallAdapter.Factory
+
+ExecutorCallAdapterFactory o-- Executor
+
+interface Executor
+
+Retrofit.Builder --> Executor
+
+class MainThreadExecutor
+
+MainThreadExecutor ..|> Executor
+
+class Platform {
+    -PLATFORM:Platform
+    -findPlatform():Platform
+    +get():Platform
+}
+
+Retrofit.Builder ..> Platform
+
+class Android {
+    +defaultCallbackExecutor():Executor
+    +defaultCallAdapterFactory(Executor):CallAdapter.Factory
+}
+
+note top of MainThreadExecutor
+"通过Builder创建Retrofit对象时，
+若没有外部传入的Executor，则会通过
+Platform（Android）创建默认执行环境。
+该环境为当前主线程，用以运行默认的线程调用。"
+end note
+
+Android ..> MainThreadExecutor
+Android ..> ExecutorCallAdapterFactory
+Android --|> Platform
+
+package "okhttp3" #yellow {
+    class Factory
+    class HttpUrl
+    class OkHttpClient
+    class Request
+    class Request.Builder
+}
+
+note left of Factory
+"okhttp3中Call的内部类Factory"
+end note
+
+Retrofit.Builder o-- Factory
+Retrofit.Builder *-- HttpUrl
+Retrofit.Builder --> OkHttpClient
+
+@enduml
