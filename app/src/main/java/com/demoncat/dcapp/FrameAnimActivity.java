@@ -67,16 +67,17 @@ public class FrameAnimActivity extends Activity {
         Log.d("test", "configuration.smallestScreenWidthDp: " + configuration.smallestScreenWidthDp);
         final ImageView imageView = findViewById(R.id.image_view);
         Log.d("test", "imageView: " + imageView);
-        GlideRoundTransform transformation =
-                new GlideRoundTransform(getApplicationContext(),
-                        dip2px(getApplicationContext(), 10));
-        transformation.setExceptCorner(false, false, false, false);
-        Glide.with(this).load("https://203.93.252.29:18088/cherym31t/m31t/download/?id=MS5qcGc=").
-                asBitmap().
-                skipMemoryCache(true).
-                placeholder(R.drawable.banner_default).
-                error(R.drawable.banner_default).
-                transform(transformation).into(imageView);
+//        GlideRoundTransform transformation =
+//                new GlideRoundTransform(getApplicationContext(),
+//                        dip2px(getApplicationContext(), 10));
+//        transformation.setExceptCorner(false, false, false, false);
+//        Glide.with(this).load("https://203.93.252.29:18088/cherym31t/m31t/download/?id=MS5qcGc=").
+//                asBitmap().
+//                skipMemoryCache(true).
+//                placeholder(R.drawable.banner_default).
+//                error(R.drawable.banner_default).
+//                transform(transformation).into(imageView);
+
     }
 
     public static int dip2px(Context context, float dpValue) {

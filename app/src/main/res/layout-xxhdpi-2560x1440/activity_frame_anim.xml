@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_green_light">
+    android:background="@android:color/holo_purple">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,11 +15,10 @@
         android:text="帧动画工具"
         android:textStyle="bold"
         android:textColor="@android:color/holo_orange_dark" />
-    <com.demoncat.dcapp.widget.RoundCornerImageView
+    <ImageView
         android:id="@+id/image_view"
         android:layout_width="match_parent"
-        android:layout_height="73dp"
-        android:scaleType="centerCrop"/>
+        android:layout_height="73dp"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
