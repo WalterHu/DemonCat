@@ -10,11 +10,17 @@ package com.demoncat.dcapp.mockito;
 /**
  * 作为业务流程测试
  */
-public class Presenter {
+public class Presenter extends Callback {
     private Person mPerson;
+    private Model mModel;
 
     public Presenter(Person mPerson) {
         this.mPerson = mPerson;
+    }
+
+    public Presenter(Person person, Model model) {
+        this.mPerson = person;
+        this.mModel = model;
     }
 
     public void initialize() {
@@ -38,5 +44,26 @@ public class Presenter {
             int age = mPerson.getAge();
             mPerson.setAge(age - 1);
         }
+    }
+
+    public void changeName(String name) {
+        if (mModel != null) {
+            mModel.executeAsyncMethod(this);
+        }
+    }
+
+    public String getPersonName() {
+        return mPerson == null ? null : mPerson.getName();
+    }
+
+    @Override
+    public void onSuccess(Person person) {
+        System.out.println("onSuccess person: " + person.getName());
+        mPerson = person;
+    }
+
+    @Override
+    public void onFailure() {
+        super.onFailure();
     }
 }
