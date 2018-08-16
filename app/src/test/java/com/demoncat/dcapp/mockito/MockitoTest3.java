@@ -45,8 +45,11 @@ public class MockitoTest3 {
         Assert.assertThat(captor.getValue(), is(1)); // 验证传入Person方法setAge的参数是1
     }
 
-    @Test
-    public void testForReduce() {
-
+    @Test(expected = RuntimeException.class)
+    public void testForThrow() {
+        Mockito.doThrow(new RuntimeException("异常出现了1")).when(mPerson).getAge();
+        mPerson.getAge();
+        Mockito.when(mPerson.getAge()).thenThrow(new RuntimeException("异常出现了2"));
+        mPerson.getAge();
     }
 }

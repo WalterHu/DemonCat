@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.description;
@@ -44,12 +45,16 @@ public class MockitoTest2 {
         System.out.println(System.currentTimeMillis());
         // 验证getAge()方法被至少调用过2次
         verify(mPerson, atLeast(2)).getAge();
+        mPerson.setSex(1);
+        verify(mPerson).setSex(2); // 失败，因为setSex(2)未被调用过
+        verify(mPerson).setSex(anyInt()); // 成功，因为ArgementMatcher匹配任意参数
     }
 
     @Test
     public void testForCall() {
         mPerson.getAge();
         verify(mPerson).getAge();
+        verify(mPerson, times(1)).getAge(); // 同上
         System.out.println("testForCall1");
         verify(mPerson, times(0)).getName();
         System.out.println("testForCall2");
@@ -60,7 +65,7 @@ public class MockitoTest2 {
         mPerson.getAge();
         mPerson.getAge();
         // 验证至少调用了3次，失败，因为此处只调用了2次
-//        verify(mPerson, atLeast(3)).getAge();
+        verify(mPerson, atLeast(3)).getAge();
     }
 
     @Test

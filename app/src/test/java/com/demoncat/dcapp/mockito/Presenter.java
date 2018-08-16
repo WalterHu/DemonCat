@@ -23,15 +23,6 @@ public class Presenter extends Callback {
         this.mModel = model;
     }
 
-    public void initialize() {
-        if (mPerson == null) {
-            mPerson = new Person();
-            mPerson.setAge(15);
-            mPerson.setName("小花");
-            mPerson.setSex(1);
-        }
-    }
-
     public void growup() {
         if (mPerson != null) {
             int age = mPerson.getAge();
