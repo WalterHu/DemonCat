@@ -14,6 +14,11 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 测试Condition的用法
  * 显示锁提供自己的等待/通知机制，即condition，与object的wait、notify、notifyAll对应
+ *
+ * ReetrantLock能够提供不止一个Condition，即一个锁支持多个Condition，
+ * 存在多个等待队列
+ *
+ * @see BlockQueue
  */
 public class TestOfCondition {
     private Lock lock = new ReentrantLock(); // 创建显示锁
