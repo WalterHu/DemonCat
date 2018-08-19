@@ -25,7 +25,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * 6.通过Lock可以知道有没有成功获取锁，而synchronized却无法办到
  * 7.Lock可以提高多个线程进行读操作的效率
  *
- * 当竞争资源非常激烈时（即有大量线程同时竞争），此时Lock的性能要远远优于synchronized.
+ * 当竞争资源非常激烈时（即有大量线程同时竞争），此时Lock的性能要远远优于synchronized。
+ *
+ * ReentrantLock，即重入锁，是一个和synchronized关键字等价的，支持线程重入的互斥锁。
  * ReentrantLock是唯一实现了Lock接口的类，并且ReentrantLock提供了更多的方法。
  */
 public class TestOfLock {
