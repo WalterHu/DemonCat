@@ -7,7 +7,7 @@ package test;
  * @CreateDate: 2018/8/15
  */
 public class TestOfCodeBlock {
-    public static int a;
+    public static final int a = 10;
 
     static {
         System.out.println("父类静态代码块");
