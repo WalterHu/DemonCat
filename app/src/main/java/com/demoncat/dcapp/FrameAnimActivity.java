@@ -17,11 +17,13 @@ package com.demoncat.dcapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -77,7 +79,12 @@ public class FrameAnimActivity extends Activity {
 //                placeholder(R.drawable.banner_default).
 //                error(R.drawable.banner_default).
 //                transform(transformation).into(imageView);
-
+        findViewById(R.id.title).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(FrameAnimActivity.this, LeakMemActivity.class));
+            }
+        });
     }
 
     public static int dip2px(Context context, float dpValue) {
