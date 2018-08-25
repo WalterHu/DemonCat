@@ -38,11 +38,33 @@ public class TestOfCallable {
         // FutureTask同样能够取消，但是如果执行结束后，则无法重启与取消。
         // FutureTask能够包裹Callable或者Runnable对象来完成异步任务。
         // 同样可使用Executor来执行FutureTask，或者作为Thread的target来执行任务。
-        FutureTask<String> futureTask = new FutureTask<String>(new CustomCallable());
+        final FutureTask<String> futureTask = new FutureTask<String>(new CustomCallable());
         new Thread(futureTask).start(); // FutureTask实现了Runnable接口和Future接口
+        new Thread(new Runnable() { // 新起一个线程也来获取结果
+            @Override
+            public void run() {
+                try {
+                    final long start = System.currentTimeMillis();
+                    System.out.println("result of thread " + Thread.currentThread().getName() + " is "+ futureTask.get() + ", use " + (System.currentTimeMillis() - start));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        new Thread(new Runnable() { // 新起一个线程也来获取结果
+            @Override
+            public void run() {
+                try {
+                    final long start = System.currentTimeMillis();
+                    System.out.println("result of thread " + Thread.currentThread().getName() + " is "+ futureTask.get() + ", use " + (System.currentTimeMillis() - start));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         final long start = System.currentTimeMillis();
         try {
-            System.out.println("result: " + futureTask.get() + ", " + (System.currentTimeMillis() - start));
+            System.out.println("result of thread " + Thread.currentThread().getName() + " is "+ futureTask.get() + ", use " + (System.currentTimeMillis() - start));
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
